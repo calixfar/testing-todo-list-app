@@ -1,32 +1,31 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import { Todo } from "./todo"
+import { fireEvent, render, screen } from '@testing-library/react'
+import { Todo } from './todo'
 
-
-function addNewTodoItem (value: string): {input: HTMLInputElement} {
+function addNewTodoItem (value: string): { input: HTMLInputElement } {
   render(<Todo items={[]} />)
   const input: HTMLInputElement = screen.getByRole('textbox')
 
-  fireEvent.change(input, {target: {value}})
-  fireEvent.keyDown(input, {key: 'Enter', charCode: 13})
+  fireEvent.change(input, { target: { value } })
+  fireEvent.keyDown(input, { key: 'Enter', charCode: 13 })
 
   return { input }
 }
 
-describe('first', () => { 
+describe('first', () => {
   test('should render the items passed as prop', () => {
-    const items = [{value: 'buy milk', isDone: false}]
-    render(<Todo items={items}/>)
+    const items = [{ id: '1', value: 'buy milk', isDone: false }]
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     expect(screen.getByText(items[0].value)).toBeInTheDocument()
   })
 
   test('should render every item in the items passed prop', () => {
     const items = [
-      {value: 'buy milk', isDone: false}, 
-      {value: 'buy coffe', isDone: false}, 
-      {value: 'pay light bill', isDone: false}
+      { id: '1', value: 'buy milk', isDone: false },
+      { id: '2', value: 'buy coffe', isDone: false },
+      { id: '3', value: 'pay light bill', isDone: false }
     ]
-    render(<Todo items={items}/>)
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     items.forEach((item) => {
       expect(screen.getByText(item.value)).toBeInTheDocument()
@@ -49,11 +48,11 @@ describe('first', () => {
 
   test('should render as many checkbox as items passed as props', () => {
     const items = [
-      {value: 'buy milk', isDone: false}, 
-      {value: 'buy coffe', isDone: false}, 
-      {value: 'pay light bill', isDone: false}
+      { id: '1', value: 'buy milk', isDone: false },
+      { id: '2', value: 'buy coffe', isDone: false },
+      { id: '3', value: 'pay light bill', isDone: false }
     ]
-    render(<Todo items={items}/>)
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
     const checkboxs = screen.getAllByRole('checkbox')
 
     expect(checkboxs).toHaveLength(items.length)
@@ -61,11 +60,11 @@ describe('first', () => {
 
   test('should render the checkbox with the right checked value', () => {
     const items = [
-      {value: 'buy milk', isDone: true}, 
-      {value: 'buy coffe', isDone: false}, 
-      {value: 'pay light bill', isDone: true}
+      { id: '1', value: 'buy milk', isDone: true },
+      { id: '2', value: 'buy coffe', isDone: false },
+      { id: '3', value: 'pay light bill', isDone: true }
     ]
-    render(<Todo items={items}/>)
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     items.forEach((item) => {
       const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.value.replace(/ /g, '-')}`)
@@ -75,21 +74,21 @@ describe('first', () => {
 
   test('should add a class to the todo item container if this is marked as done', () => {
     const items = [
-      {value: 'buy milk', isDone: true}, 
-      {value: 'buy coffe', isDone: false}, 
-      {value: 'pay light bill', isDone: true}
+      { id: '1', value: 'buy milk', isDone: true },
+      { id: '2', value: 'buy coffe', isDone: false },
+      { id: '3', value: 'pay light bill', isDone: true }
     ]
-    render(<Todo items={items}/>)
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     items.filter((item) => item.isDone).forEach((item) => {
       const containerElement: HTMLElement = screen.getByTestId(`container-${item.value.replace(/ /g, '-')}`)
       expect(containerElement).toHaveClass('isDone')
     })
   })
-  
+
   test('should add the isDone class if a todo item gets clicked and this one does not have the class', () => {
-    const items = [{value: 'buy coffe', isDone: false}]
-    render(<Todo items={items}/>)
+    const items = [{ id: '1', value: 'buy coffe', isDone: false }]
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].value.replace(/ /g, '-')}`)
 
@@ -101,8 +100,8 @@ describe('first', () => {
   })
 
   test('should remove the isDone class if a todo item gets clicked and this one has the class', () => {
-    const items = [{value: 'buy coffe', isDone: true}]
-    render(<Todo items={items}/>)
+    const items = [{ id: '1', value: 'buy coffe', isDone: true }]
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].value.replace(/ /g, '-')}`)
 
@@ -111,5 +110,58 @@ describe('first', () => {
     const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].value.replace(/ /g, '-')}`)
 
     expect(containerElement).not.toHaveClass('isDone')
+  })
+
+  test('should appear a button to delete the todo item if it gets marked as done ', () => {
+    const items = [
+      { id: '1', value: 'buy tea', isDone: true },
+      { id: '2', value: 'buy coffe', isDone: false }
+    ]
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    
+    items.forEach((item) => {
+      if (!item.isDone) {
+        const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.value.replace(/ /g, '-')}`)
+    
+        fireEvent.click(checkboxElement)
+      }
+
+      const deleteButton = screen.getByTestId(`delete-button-${item.value.replace(/ /g, '-')}`)
+  
+      expect(deleteButton).toBeInTheDocument()
+    })
+  })
+
+  test('should delete the item if the delete button gets clicked', () => {
+    const items = [
+      { id: '1', value: 'buy tea', isDone: true },
+      { id: '2', value: 'buy coffe', isDone: false }
+    ]
+    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+
+    const deleteButton = screen.getByTestId(`delete-button-${items[0].value.replace(/ /g, '-')}`)
+
+    fireEvent.click(deleteButton)
+
+    const item = screen.queryByTestId(`container-${items[0].value.replace(/ /g, '-')}`)
+
+    expect(item).not.toBeInTheDocument()
+  })
+
+  test('should call the onDeleteItem function if the delete button gets clicked', () => {
+    const items = [
+      { id: '1', value: 'buy tea', isDone: true },
+      { id: '2', value: 'buy coffe', isDone: false }
+    ]
+    const handleDeleteItem = jest.fn()
+
+    render(<Todo items={items} onDeleteItem={handleDeleteItem}/>)
+
+    const deleteButton = screen.getByTestId(`delete-button-${items[0].value.replace(/ /g, '-')}`)
+
+    fireEvent.click(deleteButton)
+
+    expect(handleDeleteItem.mock.calls).toHaveLength(1)
+    expect(handleDeleteItem.mock.calls[0][0]).toBe(items[0].id)
   })
 })
