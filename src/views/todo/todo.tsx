@@ -5,7 +5,7 @@ interface Props {
   onDeleteItem: (id: string) => void
 }
 
-export const Todo = ({ items, onDeleteItem }: Props) => {
+export const Todo = ({ items, onDeleteItem = (id: string) => {} }: Props) => {
   const [value, setValue] = React.useState('')
   const [todoItems, setTodoItems] = React.useState(items)
 

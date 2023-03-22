@@ -1,8 +1,17 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { Todo } from './todo'
 
+function makeSut ({
+  items = [
+    { id: '1', value: 'buy tea', isDone: true },
+    { id: '2', value: 'buy coffe', isDone: false }
+  ],
+  onDeleteItem = jest.fn()
+}) {
+  render(<Todo items={items} onDeleteItem={onDeleteItem} />)
+}
+
 function addNewTodoItem (value: string): { input: HTMLInputElement } {
-  render(<Todo items={[]} />)
   const input: HTMLInputElement = screen.getByRole('textbox')
 
   fireEvent.change(input, { target: { value } })
@@ -25,7 +34,8 @@ describe('first', () => {
       { id: '2', value: 'buy coffe', isDone: false },
       { id: '3', value: 'pay light bill', isDone: false }
     ]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    
+    makeSut({ items })
 
     items.forEach((item) => {
       expect(screen.getByText(item.value)).toBeInTheDocument()
@@ -33,6 +43,8 @@ describe('first', () => {
   })
 
   test('should render a new item pressing the enter key', () => {
+    makeSut({})
+
     const newItem = 'buy a new shoes'
     addNewTodoItem(newItem)
 
@@ -40,6 +52,8 @@ describe('first', () => {
   })
 
   test('should clear the input after adding a new todo item', () => {
+    makeSut({})
+
     const newItem = 'buy a new shoes'
     const { input } = addNewTodoItem(newItem)
 
@@ -52,7 +66,7 @@ describe('first', () => {
       { id: '2', value: 'buy coffe', isDone: false },
       { id: '3', value: 'pay light bill', isDone: false }
     ]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    makeSut({ items })
     const checkboxs = screen.getAllByRole('checkbox')
 
     expect(checkboxs).toHaveLength(items.length)
@@ -64,7 +78,7 @@ describe('first', () => {
       { id: '2', value: 'buy coffe', isDone: false },
       { id: '3', value: 'pay light bill', isDone: true }
     ]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    makeSut({ items })
 
     items.forEach((item) => {
       const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.value.replace(/ /g, '-')}`)
@@ -88,7 +102,7 @@ describe('first', () => {
 
   test('should add the isDone class if a todo item gets clicked and this one does not have the class', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: false }]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    makeSut({ items })
 
     const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].value.replace(/ /g, '-')}`)
 
@@ -101,7 +115,7 @@ describe('first', () => {
 
   test('should remove the isDone class if a todo item gets clicked and this one has the class', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: true }]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    makeSut({ items })
 
     const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].value.replace(/ /g, '-')}`)
 
@@ -117,7 +131,7 @@ describe('first', () => {
       { id: '1', value: 'buy tea', isDone: true },
       { id: '2', value: 'buy coffe', isDone: false }
     ]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    makeSut({ items })
     
     items.forEach((item) => {
       if (!item.isDone) {
@@ -137,7 +151,7 @@ describe('first', () => {
       { id: '1', value: 'buy tea', isDone: true },
       { id: '2', value: 'buy coffe', isDone: false }
     ]
-    render(<Todo items={items} onDeleteItem={jest.fn()}/>)
+    makeSut({ items })
 
     const deleteButton = screen.getByTestId(`delete-button-${items[0].value.replace(/ /g, '-')}`)
 
@@ -155,7 +169,7 @@ describe('first', () => {
     ]
     const handleDeleteItem = jest.fn()
 
-    render(<Todo items={items} onDeleteItem={handleDeleteItem}/>)
+    makeSut({ onDeleteItem: handleDeleteItem })
 
     const deleteButton = screen.getByTestId(`delete-button-${items[0].value.replace(/ /g, '-')}`)
 
@@ -163,5 +177,9 @@ describe('first', () => {
 
     expect(handleDeleteItem.mock.calls).toHaveLength(1)
     expect(handleDeleteItem.mock.calls[0][0]).toBe(items[0].id)
+  })
+
+  test('should appear a button to update the content if the todo item has not been done', () => {
+
   })
 })
