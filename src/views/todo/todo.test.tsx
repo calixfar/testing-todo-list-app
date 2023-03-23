@@ -196,4 +196,32 @@ describe('first', () => {
       }
     })
   })
+
+  test('should show an input in todo item if the update button gets clicked', () => {
+    const items = [{ id: '1', value: 'buy coffe', isDone: false }]
+
+    makeSut({ items })
+
+    const updateButton = screen.getByTestId(`update-button-${items[0].value.replace(/ /g, '-')}`)
+    
+    fireEvent.click(updateButton)
+    
+    const updateInput = screen.getByTestId(`update-input-${items[0].value.replace(/ /g, '-')}`)
+
+    expect(updateInput).toBeInTheDocument()
+  })
+
+  test('should have as input value the todo item value when update input is shown', () => {
+    const items = [{ id: '1', value: 'buy coffe', isDone: false }]
+
+    makeSut({ items })
+
+    const updateButton = screen.getByTestId(`update-button-${items[0].value.replace(/ /g, '-')}`)
+    
+    fireEvent.click(updateButton)
+    
+    const updateInput = screen.getByTestId(`update-input-${items[0].value.replace(/ /g, '-')}`)
+
+    expect(updateInput).toHaveValue(items[0].value)
+  })
 })

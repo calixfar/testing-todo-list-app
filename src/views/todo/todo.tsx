@@ -1,4 +1,5 @@
 import React from 'react'
+import TodoItem from '../../components/todo-item'
 import { Item } from './interfaces'
 interface Props {
   items: Item[]
@@ -38,38 +39,9 @@ export const Todo = ({ items, onDeleteItem = (id: string) => {} }: Props) => {
         />
       </div>
       <div>
-        {todoItems.map((item) => {
-          const getCustomId = (section: string) => `${section}-${item.value.replace(/ /g, '-')}`
-          const customCheckBoxId = getCustomId('checkbox')
-
-          return (
-            <div
-              key={item.value}
-              className={item.isDone ? 'isDone' : ''}
-              data-testid={getCustomId('container')}
-            >
-              <input
-                type="checkbox"
-                id={customCheckBoxId}
-                data-testid={customCheckBoxId}
-                defaultChecked={item.isDone}
-                onChange={handleCheckBoxChange.bind({ item })}
-              />
-              <label htmlFor={customCheckBoxId}>{item.value}</label>
-              {!item.isDone && (
-                <button
-                  data-testid={getCustomId('update-button')}
-                >Update</button>
-              )}
-              {item.isDone && (
-                <button
-                  onClick={() => handleDeleteItem(item.id)}
-                  data-testid={getCustomId('delete-button')}
-                >Delete</button>
-              )}
-            </div>
-          )
-        })}
+        {todoItems.map((item) => (
+          <TodoItem key={item.id} item={item} handleCheckBoxChange={handleCheckBoxChange} handleDeleteItem={handleDeleteItem} />
+        ))}
       </div>
     </div>
   )
