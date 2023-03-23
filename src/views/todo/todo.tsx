@@ -56,6 +56,11 @@ export const Todo = ({ items, onDeleteItem = (id: string) => {} }: Props) => {
                 onChange={handleCheckBoxChange.bind({ item })}
               />
               <label htmlFor={customCheckBoxId}>{item.value}</label>
+              {!item.isDone && (
+                <button
+                  data-testid={getCustomId('update-button')}
+                >Update</button>
+              )}
               {item.isDone && (
                 <button
                   onClick={() => handleDeleteItem(item.id)}

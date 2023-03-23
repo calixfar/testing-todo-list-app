@@ -9,6 +9,8 @@ function makeSut ({
   onDeleteItem = jest.fn()
 }) {
   render(<Todo items={items} onDeleteItem={onDeleteItem} />)
+
+  return { items }
 }
 
 function addNewTodoItem (value: string): { input: HTMLInputElement } {
@@ -179,7 +181,19 @@ describe('first', () => {
     expect(handleDeleteItem.mock.calls[0][0]).toBe(items[0].id)
   })
 
-  test('should appear a button to update the content if the todo item has not been done', () => {
+  test('should appear a button to update the content if the todo item has not been marked as done', () => {
+    const { items } = makeSut({})
 
+    items.forEach((item) => {
+      const updateButton = screen.queryByTestId(`update-button-${item.value.replace(/ /g, '-')}`)
+
+      const initialAssertion = expect(updateButton)
+
+      if (item.isDone) {
+        initialAssertion.not.toBeInTheDocument()
+      } else {
+        initialAssertion.toBeInTheDocument()
+      }
+    })
   })
 })
