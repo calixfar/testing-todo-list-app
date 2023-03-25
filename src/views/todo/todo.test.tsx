@@ -255,6 +255,26 @@ describe('first', () => {
     expect(cancelUpdatingButton).toBeInTheDocument()
   })
 
+  test('should change the update button text if the update input value gets changed', () => {
+    const items = [{ id: '1', value: 'buy coffe', isDone: false }]
+
+    makeSut({ items })
+
+    const updateButton = getTodoItemElement('update-button', items[0].id)
+    
+    fireEvent.click(updateButton)
+    
+    const updateInput: HTMLInputElement = getTodoItemElement('update-input', items[0].id)
+
+    fireEvent.change(updateInput, { target: { value: 'go to theater' }})
+
+    expect(updateButton).toHaveTextContent('Change')
+
+    fireEvent.change(updateInput, { target: { value: items[0].value }})
+
+    expect(updateButton).toHaveTextContent('Update')
+  })
+
   test('should hide the update input if the cancel button gets clicked', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: false }]
 

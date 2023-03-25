@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Item } from './interfaces'
 
 interface Props {
@@ -9,9 +9,20 @@ interface Props {
 
 const TodoItem = ({ item, handleCheckBoxChange, handleDeleteItem }: Props) => {
   const [isUpdating, setIsUpdating] = useState(false)
+  const [updateInputValue, setUpdateInputValue] = useState(item.value)
 
   const getCustomId = (section: string) => `${section}-${item.id.replace(/ /g, '-')}`
   const customCheckBoxId = getCustomId('checkbox')
+
+  const updateButtonText = useMemo(() => {
+    let value = 'Update'
+
+    if (updateInputValue !== item.value) {
+      value = 'Change'
+    }
+
+    return value
+  }, [item.value, updateInputValue])
 
   return (
     <div
@@ -31,6 +42,9 @@ const TodoItem = ({ item, handleCheckBoxChange, handleDeleteItem }: Props) => {
           <input 
             data-testid={getCustomId('update-input')} 
             defaultValue={item.value}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setUpdateInputValue(event.target.value)
+            }}
           />
           <button
             data-testid={getCustomId('cancel-button')}
@@ -48,7 +62,7 @@ const TodoItem = ({ item, handleCheckBoxChange, handleDeleteItem }: Props) => {
         <button
           data-testid={getCustomId('update-button')}
           onClick={() => setIsUpdating(true)}
-        >Update</button>
+        >{updateButtonText}</button>
       )}
       {item.isDone && (
         <button
