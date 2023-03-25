@@ -22,6 +22,16 @@ function addNewTodoItem (value: string): { input: HTMLInputElement } {
   return { input }
 }
 
+function getTodoItemElement(section: string, id: string, method = 'get') {
+  const transformedId = id.replace(/ /g, '-')
+
+  if (method === 'get') {
+    return screen.getByTestId(`${section}-${transformedId}`)
+  }
+
+  return screen.queryByTestId(`${section}-${transformedId}`)
+}
+
 describe('first', () => {
   test('should render the items passed as prop', () => {
     const items = [{ id: '1', value: 'buy milk', isDone: false }]
@@ -83,7 +93,7 @@ describe('first', () => {
     makeSut({ items })
 
     items.forEach((item) => {
-      const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.id.replace(/ /g, '-')}`)
+      const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', item.id)
       expect(checkboxElement.defaultChecked).toBe(item.isDone)
     })
   })
@@ -97,7 +107,7 @@ describe('first', () => {
     render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     items.filter((item) => item.isDone).forEach((item) => {
-      const containerElement: HTMLElement = screen.getByTestId(`container-${item.id.replace(/ /g, '-')}`)
+      const containerElement: HTMLElement = getTodoItemElement('container', item.id)
       expect(containerElement).toHaveClass('isDone')
     })
   })
@@ -106,11 +116,11 @@ describe('first', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: false }]
     makeSut({ items })
 
-    const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].id.replace(/ /g, '-')}`)
+    const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', items[0].id)
 
     fireEvent.click(checkboxElement)
 
-    const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].id.replace(/ /g, '-')}`)
+    const containerElement: HTMLElement = getTodoItemElement('container', items[0].id)
 
     expect(containerElement).toHaveClass('isDone')
   })
@@ -119,11 +129,11 @@ describe('first', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: true }]
     makeSut({ items })
 
-    const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].id.replace(/ /g, '-')}`)
+    const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', items[0].id)
 
     fireEvent.click(checkboxElement)
 
-    const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].id.replace(/ /g, '-')}`)
+    const containerElement: HTMLElement = getTodoItemElement('container', items[0].id)
 
     expect(containerElement).not.toHaveClass('isDone')
   })
@@ -137,12 +147,12 @@ describe('first', () => {
     
     items.forEach((item) => {
       if (!item.isDone) {
-        const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.id.replace(/ /g, '-')}`)
+        const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', item.id)
     
         fireEvent.click(checkboxElement)
       }
 
-      const deleteButton = screen.getByTestId(`delete-button-${item.id.replace(/ /g, '-')}`)
+      const deleteButton = getTodoItemElement('delete-button', item.id)
   
       expect(deleteButton).toBeInTheDocument()
     })
@@ -155,11 +165,11 @@ describe('first', () => {
     ]
     makeSut({ items })
 
-    const deleteButton = screen.getByTestId(`delete-button-${items[0].id.replace(/ /g, '-')}`)
+    const deleteButton = getTodoItemElement('delete-button', items[0].id)
 
     fireEvent.click(deleteButton)
 
-    const item = screen.queryByTestId(`container-${items[0].id.replace(/ /g, '-')}`)
+    const item = getTodoItemElement('container', items[0].id, 'query')
 
     expect(item).not.toBeInTheDocument()
   })
@@ -173,7 +183,7 @@ describe('first', () => {
 
     makeSut({ onDeleteItem: handleDeleteItem })
 
-    const deleteButton = screen.getByTestId(`delete-button-${items[0].id.replace(/ /g, '-')}`)
+    const deleteButton = getTodoItemElement('delete-button', items[0].id)
 
     fireEvent.click(deleteButton)
 
@@ -185,7 +195,7 @@ describe('first', () => {
     const { items } = makeSut({})
 
     items.forEach((item) => {
-      const updateButton = screen.queryByTestId(`update-button-${item.id.replace(/ /g, '-')}`)
+      const updateButton = getTodoItemElement('update-button', item.id, 'query')
 
       const initialAssertion = expect(updateButton)
 
@@ -202,11 +212,11 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
+    const updateButton = getTodoItemElement('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
-    const updateInput = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
+    const updateInput = getTodoItemElement('update-input', items[0].id)
 
     expect(updateInput).toBeInTheDocument()
   })
@@ -216,11 +226,11 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
+    const updateButton = getTodoItemElement('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
-    const updateInput = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
+    const updateInput = getTodoItemElement('update-input', items[0].id)
 
     expect(updateInput).toHaveValue(items[0].value)
   })
@@ -230,17 +240,17 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
+    const updateButton = getTodoItemElement('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
-    const updateInput: HTMLInputElement = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
+    const updateInput: HTMLInputElement = getTodoItemElement('update-input', items[0].id)
 
     const newValue = 'go to theater'
 
     fireEvent.change(updateInput, { target: { value: newValue }})
 
-    const cancelUpdatingButton = screen.getByTestId(`cancel-button-${items[0].id.replace(/ /g, '-')}`)
+    const cancelUpdatingButton = getTodoItemElement('cancel-button', items[0].id)
 
     expect(cancelUpdatingButton).toBeInTheDocument()
   })
@@ -250,13 +260,13 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
+    const updateButton = getTodoItemElement('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
-    const updateInput: HTMLInputElement = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
+    const updateInput: HTMLInputElement = getTodoItemElement('update-input', items[0].id)
 
-    const cancelUpdatingButton = screen.getByTestId(`cancel-button-${items[0].id.replace(/ /g, '-')}`)
+    const cancelUpdatingButton = getTodoItemElement('cancel-button', items[0].id)
 
     fireEvent.click(cancelUpdatingButton)
 
