@@ -8,7 +8,7 @@ interface Props {
 
 export const Todo = ({ items, onDeleteItem = (id: string) => {} }: Props) => {
   const [value, setValue] = React.useState('')
-  const [todoItems, setTodoItems] = React.useState(items)
+  const [todoItems, setTodoItems] = React.useState<Item[]>(items)
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && value) {
