@@ -83,7 +83,7 @@ describe('first', () => {
     makeSut({ items })
 
     items.forEach((item) => {
-      const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.value.replace(/ /g, '-')}`)
+      const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.id.replace(/ /g, '-')}`)
       expect(checkboxElement.defaultChecked).toBe(item.isDone)
     })
   })
@@ -97,7 +97,7 @@ describe('first', () => {
     render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     items.filter((item) => item.isDone).forEach((item) => {
-      const containerElement: HTMLElement = screen.getByTestId(`container-${item.value.replace(/ /g, '-')}`)
+      const containerElement: HTMLElement = screen.getByTestId(`container-${item.id.replace(/ /g, '-')}`)
       expect(containerElement).toHaveClass('isDone')
     })
   })
@@ -106,11 +106,11 @@ describe('first', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: false }]
     makeSut({ items })
 
-    const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].value.replace(/ /g, '-')}`)
+    const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].id.replace(/ /g, '-')}`)
 
     fireEvent.click(checkboxElement)
 
-    const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].value.replace(/ /g, '-')}`)
+    const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].id.replace(/ /g, '-')}`)
 
     expect(containerElement).toHaveClass('isDone')
   })
@@ -119,11 +119,11 @@ describe('first', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: true }]
     makeSut({ items })
 
-    const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].value.replace(/ /g, '-')}`)
+    const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${items[0].id.replace(/ /g, '-')}`)
 
     fireEvent.click(checkboxElement)
 
-    const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].value.replace(/ /g, '-')}`)
+    const containerElement: HTMLElement = screen.getByTestId(`container-${items[0].id.replace(/ /g, '-')}`)
 
     expect(containerElement).not.toHaveClass('isDone')
   })
@@ -137,12 +137,12 @@ describe('first', () => {
     
     items.forEach((item) => {
       if (!item.isDone) {
-        const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.value.replace(/ /g, '-')}`)
+        const checkboxElement: HTMLInputElement = screen.getByTestId(`checkbox-${item.id.replace(/ /g, '-')}`)
     
         fireEvent.click(checkboxElement)
       }
 
-      const deleteButton = screen.getByTestId(`delete-button-${item.value.replace(/ /g, '-')}`)
+      const deleteButton = screen.getByTestId(`delete-button-${item.id.replace(/ /g, '-')}`)
   
       expect(deleteButton).toBeInTheDocument()
     })
@@ -155,11 +155,11 @@ describe('first', () => {
     ]
     makeSut({ items })
 
-    const deleteButton = screen.getByTestId(`delete-button-${items[0].value.replace(/ /g, '-')}`)
+    const deleteButton = screen.getByTestId(`delete-button-${items[0].id.replace(/ /g, '-')}`)
 
     fireEvent.click(deleteButton)
 
-    const item = screen.queryByTestId(`container-${items[0].value.replace(/ /g, '-')}`)
+    const item = screen.queryByTestId(`container-${items[0].id.replace(/ /g, '-')}`)
 
     expect(item).not.toBeInTheDocument()
   })
@@ -173,7 +173,7 @@ describe('first', () => {
 
     makeSut({ onDeleteItem: handleDeleteItem })
 
-    const deleteButton = screen.getByTestId(`delete-button-${items[0].value.replace(/ /g, '-')}`)
+    const deleteButton = screen.getByTestId(`delete-button-${items[0].id.replace(/ /g, '-')}`)
 
     fireEvent.click(deleteButton)
 
@@ -185,7 +185,7 @@ describe('first', () => {
     const { items } = makeSut({})
 
     items.forEach((item) => {
-      const updateButton = screen.queryByTestId(`update-button-${item.value.replace(/ /g, '-')}`)
+      const updateButton = screen.queryByTestId(`update-button-${item.id.replace(/ /g, '-')}`)
 
       const initialAssertion = expect(updateButton)
 
@@ -202,11 +202,11 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = screen.getByTestId(`update-button-${items[0].value.replace(/ /g, '-')}`)
+    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
     
     fireEvent.click(updateButton)
     
-    const updateInput = screen.getByTestId(`update-input-${items[0].value.replace(/ /g, '-')}`)
+    const updateInput = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
 
     expect(updateInput).toBeInTheDocument()
   })
@@ -216,12 +216,50 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = screen.getByTestId(`update-button-${items[0].value.replace(/ /g, '-')}`)
+    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
     
     fireEvent.click(updateButton)
     
-    const updateInput = screen.getByTestId(`update-input-${items[0].value.replace(/ /g, '-')}`)
+    const updateInput = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
 
     expect(updateInput).toHaveValue(items[0].value)
+  })
+
+  test('should show a cancel button if the update input value gets changed', () => {
+    const items = [{ id: '1', value: 'buy coffe', isDone: false }]
+
+    makeSut({ items })
+
+    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
+    
+    fireEvent.click(updateButton)
+    
+    const updateInput: HTMLInputElement = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
+
+    const newValue = 'go to theater'
+
+    fireEvent.change(updateInput, { target: { value: newValue }})
+
+    const cancelUpdatingButton = screen.getByTestId(`cancel-button-${items[0].id.replace(/ /g, '-')}`)
+
+    expect(cancelUpdatingButton).toBeInTheDocument()
+  })
+
+  test('should hide the update input if the cancel button gets clicked', () => {
+    const items = [{ id: '1', value: 'buy coffe', isDone: false }]
+
+    makeSut({ items })
+
+    const updateButton = screen.getByTestId(`update-button-${items[0].id.replace(/ /g, '-')}`)
+    
+    fireEvent.click(updateButton)
+    
+    const updateInput: HTMLInputElement = screen.getByTestId(`update-input-${items[0].id.replace(/ /g, '-')}`)
+
+    const cancelUpdatingButton = screen.getByTestId(`cancel-button-${items[0].id.replace(/ /g, '-')}`)
+
+    fireEvent.click(cancelUpdatingButton)
+
+    expect(updateInput).not.toBeInTheDocument()
   })
 })

@@ -10,7 +10,7 @@ interface Props {
 const TodoItem = ({ item, handleCheckBoxChange, handleDeleteItem }: Props) => {
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const getCustomId = (section: string) => `${section}-${item.value.replace(/ /g, '-')}`
+  const getCustomId = (section: string) => `${section}-${item.id.replace(/ /g, '-')}`
   const customCheckBoxId = getCustomId('checkbox')
 
   return (
@@ -27,10 +27,20 @@ const TodoItem = ({ item, handleCheckBoxChange, handleDeleteItem }: Props) => {
         onChange={handleCheckBoxChange.bind({ item })}
       />
       {isUpdating ? (
-        <input 
-          data-testid={getCustomId('update-input')} 
-          value={item.value}
-        />
+        <>
+          <input 
+            data-testid={getCustomId('update-input')} 
+            defaultValue={item.value}
+          />
+          <button
+            data-testid={getCustomId('cancel-button')}
+            onClick={() => {
+              setIsUpdating(false)
+            }}
+          >
+            Cancel
+          </button>
+        </>
       ) : (
         <label htmlFor={customCheckBoxId}>{item.value}</label>
       )}
