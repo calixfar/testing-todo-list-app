@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Item } from './interfaces'
+import { Item } from '../../components/interfaces'
 import { Todo } from './todo'
+import { getData as getDataService } from '../../services/getData'
 
 interface Props {
-  getData: () => Promise<{ data: Item[] }>
+  getData?: () => Promise<{ data: Item[] }>
 }
 
-const TodoContainer = ({ getData }: Props) => {
+const TodoContainer = ({ getData = getDataService }: Props) => {
   const [data, setData] = useState<Item[]>([])
 
   useEffect(() => {
@@ -16,7 +17,7 @@ const TodoContainer = ({ getData }: Props) => {
   }, [])
 
   return (
-    <Todo items={data} />
+    <Todo items={data} onDeleteItem={() => {}} />
   )
 }
 

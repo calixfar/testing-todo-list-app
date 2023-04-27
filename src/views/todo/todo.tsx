@@ -1,6 +1,6 @@
 import React from 'react'
 import TodoItem from '../../components/todo-item'
-import { Item } from './interfaces'
+import { Item } from '../../components/interfaces'
 interface Props {
   items: Item[]
   onDeleteItem: (id: string) => void

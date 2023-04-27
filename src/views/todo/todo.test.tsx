@@ -22,14 +22,14 @@ function addNewTodoItem (value: string): { input: HTMLInputElement } {
   return { input }
 }
 
-function getTodoItemElement(section: string, id: string, method = 'get') {
+function getTodoItemElement<T extends HTMLElement>(section: string, id: string, method = 'get'): T {
   const transformedId = id.replace(/ /g, '-')
 
   if (method === 'get') {
     return screen.getByTestId(`${section}-${transformedId}`)
   }
 
-  return screen.queryByTestId(`${section}-${transformedId}`)
+  return screen.queryByTestId(`${section}-${transformedId}`) as T
 }
 
 describe('first', () => {
@@ -93,7 +93,7 @@ describe('first', () => {
     makeSut({ items })
 
     items.forEach((item) => {
-      const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', item.id)
+      const checkboxElement = getTodoItemElement<HTMLInputElement>('checkbox', item.id)
       expect(checkboxElement.defaultChecked).toBe(item.isDone)
     })
   })
@@ -107,7 +107,7 @@ describe('first', () => {
     render(<Todo items={items} onDeleteItem={jest.fn()}/>)
 
     items.filter((item) => item.isDone).forEach((item) => {
-      const containerElement: HTMLElement = getTodoItemElement('container', item.id)
+      const containerElement = getTodoItemElement<HTMLElement>('container', item.id)
       expect(containerElement).toHaveClass('isDone')
     })
   })
@@ -116,11 +116,11 @@ describe('first', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: false }]
     makeSut({ items })
 
-    const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', items[0].id)
+    const checkboxElement = getTodoItemElement<HTMLInputElement>('checkbox', items[0].id)
 
     fireEvent.click(checkboxElement)
 
-    const containerElement: HTMLElement = getTodoItemElement('container', items[0].id)
+    const containerElement = getTodoItemElement<HTMLElement>('container', items[0].id)
 
     expect(containerElement).toHaveClass('isDone')
   })
@@ -129,11 +129,11 @@ describe('first', () => {
     const items = [{ id: '1', value: 'buy coffe', isDone: true }]
     makeSut({ items })
 
-    const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', items[0].id)
+    const checkboxElement = getTodoItemElement<HTMLInputElement>('checkbox', items[0].id)
 
     fireEvent.click(checkboxElement)
 
-    const containerElement: HTMLElement = getTodoItemElement('container', items[0].id)
+    const containerElement = getTodoItemElement<HTMLElement>('container', items[0].id)
 
     expect(containerElement).not.toHaveClass('isDone')
   })
@@ -147,7 +147,7 @@ describe('first', () => {
     
     items.forEach((item) => {
       if (!item.isDone) {
-        const checkboxElement: HTMLInputElement = getTodoItemElement('checkbox', item.id)
+        const checkboxElement = getTodoItemElement<HTMLInputElement>('checkbox', item.id)
     
         fireEvent.click(checkboxElement)
       }
@@ -165,7 +165,7 @@ describe('first', () => {
     ]
     makeSut({ items })
 
-    const deleteButton = getTodoItemElement('delete-button', items[0].id)
+    const deleteButton = getTodoItemElement<HTMLButtonElement>('delete-button', items[0].id)
 
     fireEvent.click(deleteButton)
 
@@ -183,7 +183,7 @@ describe('first', () => {
 
     makeSut({ onDeleteItem: handleDeleteItem })
 
-    const deleteButton = getTodoItemElement('delete-button', items[0].id)
+    const deleteButton = getTodoItemElement<HTMLButtonElement>('delete-button', items[0].id)
 
     fireEvent.click(deleteButton)
 
@@ -212,7 +212,7 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = getTodoItemElement('update-button', items[0].id)
+    const updateButton = getTodoItemElement<HTMLButtonElement>('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
@@ -226,7 +226,7 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = getTodoItemElement('update-button', items[0].id)
+    const updateButton = getTodoItemElement<HTMLButtonElement>('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
@@ -240,11 +240,11 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = getTodoItemElement('update-button', items[0].id)
+    const updateButton = getTodoItemElement<HTMLButtonElement>('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
-    const updateInput: HTMLInputElement = getTodoItemElement('update-input', items[0].id)
+    const updateInput = getTodoItemElement<HTMLInputElement>('update-input', items[0].id)
 
     const newValue = 'go to theater'
 
@@ -260,11 +260,11 @@ describe('first', () => {
 
     makeSut({ items })
 
-    const updateButton = getTodoItemElement('update-button', items[0].id)
+    const updateButton = getTodoItemElement<HTMLButtonElement>('update-button', items[0].id)
     
     fireEvent.click(updateButton)
     
-    const updateInput: HTMLInputElement = getTodoItemElement('update-input', items[0].id)
+    const updateInput = getTodoItemElement<HTMLInputElement>('update-input', items[0].id)
 
     fireEvent.change(updateInput, { target: { value: 'go to theater' }})
 
@@ -284,7 +284,7 @@ describe('first', () => {
     
     fireEvent.click(updateButton)
     
-    const updateInput: HTMLInputElement = getTodoItemElement('update-input', items[0].id)
+    const updateInput = getTodoItemElement<HTMLInputElement>('update-input', items[0].id)
 
     const cancelUpdatingButton = getTodoItemElement('cancel-button', items[0].id)
 
